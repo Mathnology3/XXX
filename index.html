@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permainan Perkalian 4</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        body { font-family: 'Poppins', sans-serif; }
+        .bounce-in {
+            animation: bounceIn 0.6s ease-out;
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .pulse-success {
+            animation: pulseSuccess 0.6s ease-in-out;
+        }
+        @keyframes pulseSuccess {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); background-color: #10b981; }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-400 via-pink-500 to-red-500 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 bounce-in">🎯 Perkalian 4</h1>
+            <p class="text-xl text-white opacity-90">Latih kemampuan perkalian dengan angka 4!</p>
+        </div>
+
+        <!-- Multiplication Image -->
+        <div class="text-center mb-8">
+            <img src="https://raw.githubusercontent.com/Mathnology3/PERKALIAN-4/refs/heads/main/PERKALIAN%204.png" 
+                 alt="Perkalian 4 - Tabel perkalian dengan angka 4" 
+                 class="mx-auto rounded-2xl shadow-2xl max-w-2xl w-full h-auto"
+                 onerror="this.src=''; this.alt='Gambar perkalian 4 gagal dimuat'; this.style.display='none';">
+        </div>
+
+        <!-- Mode Selection -->
+        <div id="modeSelection" class="max-w-md mx-auto mb-8">
+            <div class="bg-white rounded-2xl shadow-2xl p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Pilih Mode Permainan</h2>
+                <div class="space-y-4">
+                    <button onclick="startGame('sequential')" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        📚 Mode Berurutan
+                        <div class="text-sm opacity-90 mt-1">4×1, 4×2, 4×3... hingga 4×10</div>
+                    </button>
+                    <button onclick="startGame('random')" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        🎲 Mode Acak
+                        <div class="text-sm opacity-90 mt-1">Soal perkalian dalam urutan acak</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Area -->
+        <div id="gameArea" class="hidden max-w-lg mx-auto">
+            <div class="bg-white rounded-2xl shadow-2xl p-8">
+                <!-- Progress Bar -->
+                <div class="mb-6">
+                    <div class="flex justify-between text-sm text-gray-600 mb-2">
+                        <span>Progress</span>
+                        <span id="progressText">0/10</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-green-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Score -->
+                <div class="text-center mb-6">
+                    <div class="inline-flex items-center bg-yellow-100 rounded-full px-4 py-2">
+                        <span class="text-2xl mr-2">⭐</span>
+                        <span class="font-bold text-yellow-800">Skor: <span id="score">0</span></span>
+                    </div>
+                </div>
+
+                <!-- Question -->
+                <div class="text-center mb-8">
+                    <div id="question" class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">4 × ? = ?</div>
+                    <div class="text-lg text-gray-600">Berapa hasil perkalian di atas?</div>
+                </div>
+
+                <!-- Multiple Choice Options -->
+                <div id="answerOptions" class="grid grid-cols-2 gap-4 mb-6">
+                    <!-- Options will be generated by JavaScript -->
+                </div>
+
+                <!-- Toggle Input Mode -->
+                <div class="text-center mb-4">
+                    <button id="toggleInputBtn" onclick="toggleInputMode()" class="text-blue-500 hover:text-blue-700 underline text-sm">
+                        🔄 Beralih ke mode ketik
+                    </button>
+                </div>
+
+                <!-- Answer Input (Hidden by default) -->
+                <div id="inputMode" class="hidden mb-6">
+                    <input type="number" id="answerInput" class="w-full text-center text-3xl font-bold py-4 px-6 border-3 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none transition-all duration-300" placeholder="?" autocomplete="off">
+                    <button id="submitBtn" onclick="checkAnswer()" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg mt-4">
+                        ✓ Jawab
+                    </button>
+                </div>
+
+                <!-- Feedback -->
+                <div id="feedback" class="text-center text-lg font-semibold mb-4 min-h-[2rem]"></div>
+
+                <!-- Next Button -->
+                <button id="nextBtn" onclick="nextQuestion()" class="hidden w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">
+                    ➡️ Soal Berikutnya
+                </button>
+
+                <!-- Back to Menu -->
+                <button onclick="backToMenu()" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-xl transition-all duration-300 mt-4">
+                    🏠 Kembali ke Menu
+                </button>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="resultsArea" class="hidden max-w-lg mx-auto">
+            <div class="bg-white rounded-2xl shadow-2xl p-8 text-center">
+                <div class="text-6xl mb-4">🎉</div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Selamat!</h2>
+                <div class="text-xl text-gray-600 mb-6">
+                    Anda telah menyelesaikan semua soal!
+                </div>
+                <div class="bg-yellow-100 rounded-xl p-4 mb-6">
+                    <div class="text-2xl font-bold text-yellow-800">Skor Akhir: <span id="finalScore">0</span>/100</div>
+                    <div id="performance" class="text-lg text-yellow-700 mt-2"></div>
+                </div>
+                <div class="space-y-3">
+                    <button onclick="startGame(currentMode)" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105">
+                        🔄 Main Lagi
+                    </button>
+                    <button onclick="backToMenu()" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300">
+                        🏠 Kembali ke Menu
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMode = '';
+        let currentQuestion = 0;
+        let score = 0;
+        let questions = [];
+        let correctAnswer = 0;
+        let selectedAnswer = null;
+        let isInputMode = false;
+
+        function startGame(mode) {
+            currentMode = mode;
+            currentQuestion = 0;
+            score = 0;
+            
+            // Generate questions based on mode
+            if (mode === 'sequential') {
+                questions = Array.from({length: 10}, (_, i) => i + 1);
+            } else {
+                questions = Array.from({length: 10}, (_, i) => i + 1);
+                // Shuffle array for random mode
+                for (let i = questions.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [questions[i], questions[j]] = [questions[j], questions[i]];
+                }
+            }
+            
+            document.getElementById('modeSelection').classList.add('hidden');
+            document.getElementById('resultsArea').classList.add('hidden');
+            document.getElementById('gameArea').classList.remove('hidden');
+            
+            updateScore();
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const number = questions[currentQuestion];
+            correctAnswer = 4 * number;
+            selectedAnswer = null;
+            
+            document.getElementById('question').textContent = `4 × ${number} = ?`;
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('nextBtn').classList.add('hidden');
+            
+            if (isInputMode) {
+                document.getElementById('answerInput').value = '';
+                document.getElementById('answerInput').focus();
+                document.getElementById('submitBtn').classList.remove('hidden');
+            } else {
+                generateMultipleChoiceOptions();
+            }
+            
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const progress = (currentQuestion / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `${currentQuestion}/${questions.length}`;
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+        }
+
+        function generateMultipleChoiceOptions() {
+            const options = [];
+            options.push(correctAnswer); // Add correct answer
+            
+            // Generate 3 wrong answers
+            while (options.length < 4) {
+                let wrongAnswer;
+                if (Math.random() < 0.5) {
+                    // Sometimes add/subtract small numbers
+                    wrongAnswer = correctAnswer + (Math.random() < 0.5 ? -1 : 1) * (Math.floor(Math.random() * 8) + 1);
+                } else {
+                    // Sometimes use other multiplication results
+                    const randomMultiplier = Math.floor(Math.random() * 10) + 1;
+                    wrongAnswer = 4 * randomMultiplier;
+                }
+                
+                if (wrongAnswer > 0 && wrongAnswer <= 100 && !options.includes(wrongAnswer)) {
+                    options.push(wrongAnswer);
+                }
+            }
+            
+            // Shuffle options
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            
+            // Create buttons
+            const optionsContainer = document.getElementById('answerOptions');
+            optionsContainer.innerHTML = '';
+            
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.className = 'bg-blue-100 hover:bg-blue-200 border-2 border-blue-300 text-blue-800 font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 text-xl';
+                button.onclick = () => selectMultipleChoiceAnswer(option, button);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectMultipleChoiceAnswer(answer, button) {
+            selectedAnswer = answer;
+            
+            // Reset all buttons
+            const allButtons = document.querySelectorAll('#answerOptions button');
+            allButtons.forEach(btn => {
+                btn.className = 'bg-blue-100 hover:bg-blue-200 border-2 border-blue-300 text-blue-800 font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 text-xl';
+            });
+            
+            // Highlight selected button
+            button.className = 'bg-blue-500 border-2 border-blue-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform scale-105 text-xl';
+            
+            // Auto-check answer after selection
+            setTimeout(() => {
+                checkMultipleChoiceAnswer();
+            }, 500);
+        }
+
+        function toggleInputMode() {
+            isInputMode = !isInputMode;
+            const inputMode = document.getElementById('inputMode');
+            const answerOptions = document.getElementById('answerOptions');
+            const toggleBtn = document.getElementById('toggleInputBtn');
+            
+            if (isInputMode) {
+                inputMode.classList.remove('hidden');
+                answerOptions.classList.add('hidden');
+                toggleBtn.textContent = '🔄 Beralih ke pilihan ganda';
+                document.getElementById('answerInput').focus();
+            } else {
+                inputMode.classList.add('hidden');
+                answerOptions.classList.remove('hidden');
+                toggleBtn.textContent = '🔄 Beralih ke mode ketik';
+                generateMultipleChoiceOptions();
+            }
+        }
+
+        function checkAnswer() {
+            const userAnswer = parseInt(document.getElementById('answerInput').value);
+            const feedback = document.getElementById('feedback');
+            const submitBtn = document.getElementById('submitBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const answerInput = document.getElementById('answerInput');
+
+            if (isNaN(userAnswer)) {
+                feedback.textContent = '⚠️ Masukkan angka yang valid!';
+                feedback.className = 'text-center text-lg font-semibold mb-4 min-h-[2rem] text-orange-600';
+                answerInput.classList.add('shake');
+                setTimeout(() => answerInput.classList.remove('shake'), 500);
+                return;
+            }
+
+            if (userAnswer === correctAnswer) {
+                score += 10;
+                feedback.textContent = '🎉 Benar! Hebat sekali!';
+                feedback.className = 'text-center text-lg font-semibold mb-4 min-h-[2rem] text-green-600';
+                answerInput.classList.add('pulse-success');
+                setTimeout(() => answerInput.classList.remove('pulse-success'), 600);
+            } else {
+                feedback.textContent = `❌ Salah. Jawaban yang benar adalah ${correctAnswer}`;
+                feedback.className = 'text-center text-lg font-semibold mb-4 min-h-[2rem] text-red-600';
+                answerInput.classList.add('shake');
+                setTimeout(() => answerInput.classList.remove('shake'), 500);
+            }
+
+            updateScore();
+            submitBtn.classList.add('hidden');
+            nextBtn.classList.remove('hidden');
+            answerInput.disabled = true;
+        }
+
+        function checkMultipleChoiceAnswer() {
+            const feedback = document.getElementById('feedback');
+            const nextBtn = document.getElementById('nextBtn');
+            const allButtons = document.querySelectorAll('#answerOptions button');
+
+            if (selectedAnswer === correctAnswer) {
+                score += 10;
+                feedback.textContent = '🎉 Benar! Hebat sekali!';
+                feedback.className = 'text-center text-lg font-semibold mb-4 min-h-[2rem] text-green-600';
+                
+                // Highlight correct answer in green
+                allButtons.forEach(btn => {
+                    if (parseInt(btn.textContent) === correctAnswer) {
+                        btn.className = 'w-full bg-green-500 border-2 border-green-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform scale-105 text-xl';
+                    }
+                });
+            } else {
+                feedback.textContent = `❌ Salah. Jawaban yang benar adalah ${correctAnswer}`;
+                feedback.className = 'text-center text-lg font-semibold mb-4 min-h-[2rem] text-red-600';
+                
+                // Highlight correct answer in green and wrong answer in red
+                allButtons.forEach(btn => {
+                    const btnValue = parseInt(btn.textContent);
+                    if (btnValue === correctAnswer) {
+                        btn.className = 'w-full bg-green-500 border-2 border-green-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform scale-105 text-xl';
+                    } else if (btnValue === selectedAnswer) {
+                        btn.className = 'w-full bg-red-500 border-2 border-red-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform scale-105 text-xl';
+                        btn.classList.add('shake');
+                        setTimeout(() => btn.classList.remove('shake'), 500);
+                    }
+                });
+            }
+
+            updateScore();
+            
+            // Disable all buttons
+            allButtons.forEach(btn => {
+                btn.disabled = true;
+                btn.style.cursor = 'not-allowed';
+            });
+            
+            nextBtn.classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            
+            if (isInputMode) {
+                document.getElementById('answerInput').disabled = false;
+                document.getElementById('submitBtn').classList.add('hidden');
+            }
+            
+            if (currentQuestion >= questions.length) {
+                showResults();
+            } else {
+                showQuestion();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('gameArea').classList.add('hidden');
+            document.getElementById('resultsArea').classList.remove('hidden');
+            
+            const finalScore = score;
+            document.getElementById('finalScore').textContent = finalScore;
+            
+            const performance = document.getElementById('performance');
+            if (finalScore >= 90) {
+                performance.textContent = '🌟 Luar biasa! Anda sangat menguasai perkalian 4!';
+                performance.className = 'text-lg text-green-700 mt-2';
+            } else if (finalScore >= 70) {
+                performance.textContent = '👍 Bagus! Terus berlatih untuk hasil yang lebih baik!';
+                performance.className = 'text-lg text-blue-700 mt-2';
+            } else if (finalScore >= 50) {
+                performance.textContent = '💪 Tidak buruk! Mari berlatih lagi untuk meningkatkan skor!';
+                performance.className = 'text-lg text-yellow-700 mt-2';
+            } else {
+                performance.textContent = '📚 Terus semangat! Latihan membuat sempurna!';
+                performance.className = 'text-lg text-orange-700 mt-2';
+            }
+        }
+
+        function backToMenu() {
+            document.getElementById('gameArea').classList.add('hidden');
+            document.getElementById('resultsArea').classList.add('hidden');
+            document.getElementById('modeSelection').classList.remove('hidden');
+        }
+
+        // Allow Enter key to submit answer
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('answerInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && isInputMode) {
+                    if (!document.getElementById('submitBtn').classList.contains('hidden')) {
+                        checkAnswer();
+                    } else if (!document.getElementById('nextBtn').classList.contains('hidden')) {
+                        nextQuestion();
+                    }
+                }
+            });
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97bf16c8b5aefcef',t:'MTc1NzM0MTI1Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
